@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Admin')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navAdmin}"></nav>
+
+	<main>
+		<h1>Painel do administrador</h1>
+		<p>Resumo geral do sistema.</p>
+
+		<table border="1" cellpadding="6">
+			<thead>
+				<tr>
+					<th>Usuários</th>
+					<th>Pets</th>
+					<th>Pets ativos</th>
+					<th>Vínculos</th>
+					<th>Mensagens</th>
+					<th>Consultas</th>
+					<th>Recomendações</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td th:text="${userCount}"></td>
+					<td th:text="${petCount}"></td>
+					<td th:text="${activePetCount}"></td>
+					<td th:text="${linkCount}"></td>
+					<td th:text="${messageCount}"></td>
+					<td th:text="${appointmentCount}"></td>
+					<td th:text="${recommendationCount}"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Ações rápidas</h2>
+		<ul>
+			<li><a th:href="@{/admin/usuarios}">Usuários cadastrados</a></li>
+			<li><a th:href="@{/admin/pets}">Pets e tutores</a></li>
+			<li><a th:href="@{/admin/vinculos}">Vínculos entre pets e veterinários</a></li>
+			<li><a th:href="@{/admin/mensagens}">Mensagens do sistema</a></li>
+			<li><a th:href="@{/admin/consultas}">Consultas do sistema</a></li>
+			<li><a th:href="@{/admin/recomendacoes}">Recomendações do sistema</a></li>
+		</ul>
+	</main>
+</body>
+</html>

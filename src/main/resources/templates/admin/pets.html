@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Pets')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navAdmin}"></nav>
+
+	<main>
+		<h1>Pets e tutores</h1>
+		<form method="get" th:action="@{/admin/pets}">
+			<label for="active">Filtrar por status</label>
+			<select id="active" name="active">
+				<option value="todos" th:selected="${selectedActive == null || selectedActive == 'todos'}">Todos</option>
+				<option value="ativos" th:selected="${selectedActive == 'ativos'}">Ativos</option>
+				<option value="inativos" th:selected="${selectedActive == 'inativos'}">Inativos</option>
+			</select>
+			<button type="submit">Filtrar</button>
+		</form>
+
+		<p th:if="${#lists.isEmpty(pets)}">Nenhum pet cadastrado.</p>
+		<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(pets)}">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Pet</th>
+					<th>Espécie</th>
+					<th>Tutor</th>
+					<th>E-mail do tutor</th>
+					<th>Coleira</th>
+					<th>Ativo</th>
+					<th>Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="pet : ${pets}">
+					<td th:text="${pet.id}"></td>
+					<td th:text="${pet.name}"></td>
+					<td th:text="${pet.species}"></td>
+					<td th:text="${pet.user.name}"></td>
+					<td th:text="${pet.user.email}"></td>
+					<td th:text="${pet.device != null ? pet.device.deviceCode : 'Sem coleira'}"></td>
+					<td th:text="${pet.active}"></td>
+					<td>
+						<a th:href="@{/admin/pets/{id}(id=${pet.id})}">Detalhes</a>
+						<a th:href="@{/admin/pets/{id}/editar(id=${pet.id})}">Editar</a>
+						<form th:action="@{/pets/{id}/remover(id=${pet.id})}" method="post">
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+							<button type="submit">Remover</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

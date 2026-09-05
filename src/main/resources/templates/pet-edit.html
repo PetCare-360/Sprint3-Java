@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Editar pet')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:if="${isTutor}" th:replace="~{fragmentos :: navTutor}"></nav>
+	<nav th:if="${isVet}" th:replace="~{fragmentos :: navVet}"></nav>
+	<nav th:if="${isAdmin}" th:replace="~{fragmentos :: navAdmin}"></nav>
+
+	<main>
+		<h1>Editar pet</h1>
+		<form th:action="@{/pets/{id}/form(id=${pet.id})}" method="post">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			<table cellpadding="6">
+				<tr>
+					<td><label for="name">Nome do pet</label></td>
+					<td><input id="name" type="text" name="name" maxlength="120" th:value="${pet.name}" required></td>
+				</tr>
+				<tr>
+					<td><label for="age">Idade</label></td>
+					<td><input id="age" type="number" name="age" min="0" max="40" th:value="${pet.age}" required></td>
+				</tr>
+				<tr>
+					<td><label for="weight">Peso</label></td>
+					<td><input id="weight" type="number" name="weight" min="0.10" max="200" step="0.01" th:value="${pet.weight}" required></td>
+				</tr>
+				<tr>
+					<td><label for="breed">Raça</label></td>
+					<td><input id="breed" type="text" name="breed" maxlength="120" th:value="${pet.breed}" required></td>
+				</tr>
+				<tr>
+					<td><label for="species">Espécie</label></td>
+					<td>
+						<select id="species" name="species" required>
+							<option value="DOG" th:selected="${pet.species == 'DOG'}">Cachorro</option>
+							<option value="CAT" th:selected="${pet.species == 'CAT'}">Gato</option>
+							<option value="OTHER" th:selected="${pet.species == 'OTHER'}">Outro</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="deviceId">Código da coleira</label></td>
+					<td>
+						<input id="deviceId" type="text" name="deviceId" maxlength="80"
+								th:value="${pet.device != null ? pet.device.deviceCode : ''}" required>
+					</td>
+				</tr>
+			</table>
+			<button type="submit">Salvar alterações</button>
+		</form>
+
+		<form th:action="@{/pets/{id}/remover(id=${pet.id})}" method="post">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			<button type="submit">Remover pet</button>
+		</form>
+
+		<p><a th:href="@{/dashboard}">Voltar para meu painel</a></p>
+	</main>
+</body>
+</html>

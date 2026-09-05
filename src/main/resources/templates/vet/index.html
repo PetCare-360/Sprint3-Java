@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Veterinário')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navVet}"></nav>
+
+	<main>
+		<h1>Painel do veterinário</h1>
+		<p>Resumo da sua área.</p>
+
+		<table border="1" cellpadding="6">
+			<thead>
+				<tr>
+					<th>Pets vinculados</th>
+					<th>Mensagens</th>
+					<th>Consultas</th>
+					<th>Recomendações</th>
+					<th>Alertas</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td th:text="${linkedPetCount}"></td>
+					<td th:text="${messageCount}"></td>
+					<td th:text="${appointmentCount}"></td>
+					<td th:text="${recommendationCount}"></td>
+					<td th:text="${alertCount}"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Ações rápidas</h2>
+		<ul>
+			<li><a th:href="@{/vet/pets}">Ver pets vinculados</a></li>
+			<li><a th:href="@{/vet/mensagens}">Responder mensagens</a></li>
+			<li><a th:href="@{/vet/consultas}">Ver consultas</a></li>
+			<li><a th:href="@{/vet/recomendacoes}">Enviar recomendações</a></li>
+		</ul>
+	</main>
+</body>
+</html>

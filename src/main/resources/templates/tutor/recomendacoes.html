@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Recomendações')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navTutor}"></nav>
+
+	<main>
+		<h1>Recomendações recebidas</h1>
+		<p th:if="${#lists.isEmpty(recommendations)}">Nenhuma recomendação.</p>
+		<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(recommendations)}">
+			<thead>
+				<tr>
+					<th>Pet</th>
+					<th>Veterinário</th>
+					<th>Título</th>
+					<th>Prioridade</th>
+					<th>Orientação</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${recommendations}">
+					<td th:text="${item.petName()}"></td>
+					<td th:text="${item.veterinarianName()}"></td>
+					<td th:text="${item.title()}"></td>
+					<td th:text="${item.priority()}"></td>
+					<td th:text="${item.instructions()}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabecalho(titulo)">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${titulo}">PetCare360</title>
+</head>
+<body>
+	<header th:fragment="topbar">
+		<div>
+			<strong>PetCare360</strong>
+			<span>Atendimento e monitoramento</span>
+		</div>
+		<form th:action="@{/logout}" method="post">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			<button type="submit">Sair</button>
+		</form>
+		<hr>
+	</header>
+
+	<nav th:fragment="navTutor">
+		<a th:href="@{/tutor}">Início</a> |
+		<a th:href="@{/tutor/pets}">Meus pets</a> |
+		<a th:href="@{/tutor/pets/novo}">Cadastrar pet</a> |
+		<a th:href="@{/tutor/veterinarios}">Veterinários</a> |
+		<a th:href="@{/tutor/mensagens}">Mensagens</a> |
+		<a th:href="@{/tutor/consultas}">Consultas</a> |
+		<a th:href="@{/tutor/recomendacoes}">Recomendações</a>
+		<hr>
+	</nav>
+
+	<nav th:fragment="navVet">
+		<a th:href="@{/vet}">Início</a> |
+		<a th:href="@{/vet/pets}">Pets vinculados</a> |
+		<a th:href="@{/vet/mensagens}">Mensagens</a> |
+		<a th:href="@{/vet/consultas}">Consultas</a> |
+		<a th:href="@{/vet/recomendacoes}">Recomendações</a>
+		<hr>
+	</nav>
+
+	<nav th:fragment="navAdmin">
+		<a th:href="@{/admin}">Início</a> |
+		<a th:href="@{/admin/usuarios}">Usuários</a> |
+		<a th:href="@{/admin/pets}">Pets</a> |
+		<a th:href="@{/admin/vinculos}">Vínculos</a> |
+		<a th:href="@{/admin/mensagens}">Mensagens</a> |
+		<a th:href="@{/admin/consultas}">Consultas</a> |
+		<a th:href="@{/admin/recomendacoes}">Recomendações</a>
+		<hr>
+	</nav>
+</body>
+</html>

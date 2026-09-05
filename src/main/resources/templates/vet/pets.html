@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Pets vinculados')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navVet}"></nav>
+
+	<main>
+		<h1>Pets vinculados</h1>
+		<p th:if="${#lists.isEmpty(linkedPets)}">Nenhum pet vinculado.</p>
+		<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(linkedPets)}">
+			<thead>
+				<tr>
+					<th>Pet</th>
+					<th>Espécie</th>
+					<th>Raça</th>
+					<th>Idade</th>
+					<th>Peso</th>
+					<th>Tutor</th>
+					<th>E-mail do tutor</th>
+					<th>Vinculado em</th>
+					<th>Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="link : ${linkedPets}">
+					<td th:text="${link.pet.name}"></td>
+					<td th:text="${link.pet.species}"></td>
+					<td th:text="${link.pet.breed}"></td>
+					<td th:text="${link.pet.age}"></td>
+					<td th:text="${link.pet.weight}"></td>
+					<td th:text="${link.pet.user.name}"></td>
+					<td th:text="${link.pet.user.email}"></td>
+					<td th:text="${link.assignedAt}"></td>
+					<td>
+						<a th:href="@{/vet/pets/{id}(id=${link.pet.id})}">Detalhes</a>
+						<a th:href="@{/vet/pets/{id}/editar(id=${link.pet.id})}">Editar</a>
+						<form th:action="@{/pets/{id}/remover(id=${link.pet.id})}" method="post">
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+							<button type="submit">Remover</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

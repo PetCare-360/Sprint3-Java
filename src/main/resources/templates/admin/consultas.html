@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Consultas')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navAdmin}"></nav>
+
+	<main>
+		<h1>Consultas</h1>
+		<form method="get" th:action="@{/admin/consultas}">
+			<label for="status">Filtrar por status</label>
+			<select id="status" name="status">
+				<option value="" th:selected="${selectedStatus == null || selectedStatus == ''}">Todos</option>
+				<option value="REQUESTED" th:selected="${selectedStatus == 'REQUESTED'}">Solicitada</option>
+				<option value="CONFIRMED" th:selected="${selectedStatus == 'CONFIRMED'}">Confirmada</option>
+				<option value="CANCELED" th:selected="${selectedStatus == 'CANCELED'}">Cancelada</option>
+				<option value="DONE" th:selected="${selectedStatus == 'DONE'}">Concluída</option>
+			</select>
+			<button type="submit">Filtrar</button>
+		</form>
+
+		<p th:if="${#lists.isEmpty(appointments)}">Nenhuma consulta.</p>
+		<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(appointments)}">
+			<thead>
+				<tr>
+					<th>Pet</th>
+					<th>Tutor</th>
+					<th>Veterinário</th>
+					<th>Data</th>
+					<th>Status</th>
+					<th>Motivo</th>
+					<th>Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${appointments}">
+					<td th:text="${item.petName()}"></td>
+					<td th:text="${item.tutorName()}"></td>
+					<td th:text="${item.veterinarianName()}"></td>
+					<td th:text="${item.scheduledAt()}"></td>
+					<td th:text="${item.status()}"></td>
+					<td th:text="${item.reason()}"></td>
+					<td>
+						<form th:action="@{/appointments/{id}/finalizar(id=${item.id()})}" method="post">
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+							<button type="submit">Finalizar</button>
+						</form>
+						<form th:action="@{/appointments/{id}/remover(id=${item.id()})}" method="post">
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+							<button type="submit">Remover</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

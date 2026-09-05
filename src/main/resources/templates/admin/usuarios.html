@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Usuários')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navAdmin}"></nav>
+
+	<main>
+		<h1>Usuários</h1>
+		<form method="get" th:action="@{/admin/usuarios}">
+			<label for="role">Filtrar por perfil</label>
+			<select id="role" name="role">
+				<option value="" th:selected="${selectedRole == null || selectedRole == ''}">Todos</option>
+				<option value="ROLE_CLIENTE" th:selected="${selectedRole == 'ROLE_CLIENTE'}">Tutor</option>
+				<option value="ROLE_VETERINARIO" th:selected="${selectedRole == 'ROLE_VETERINARIO'}">Veterinário</option>
+				<option value="ROLE_ADMIN" th:selected="${selectedRole == 'ROLE_ADMIN'}">Administrador</option>
+			</select>
+			<button type="submit">Filtrar</button>
+		</form>
+
+		<p th:if="${#lists.isEmpty(users)}">Nenhum usuário cadastrado.</p>
+		<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(users)}">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Nome</th>
+					<th>E-mail</th>
+					<th>Perfis</th>
+					<th>Ativo</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="user : ${users}">
+					<td th:text="${user.id}"></td>
+					<td th:text="${user.name}"></td>
+					<td th:text="${user.email}"></td>
+					<td>
+						<span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+					</td>
+					<td th:text="${user.enabled}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>

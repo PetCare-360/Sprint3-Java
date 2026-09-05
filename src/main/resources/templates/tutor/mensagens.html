@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('PetCare360 - Mensagens')}"></head>
+<body>
+	<header th:replace="~{fragmentos :: topbar}"></header>
+	<nav th:replace="~{fragmentos :: navTutor}"></nav>
+
+	<main>
+		<h1>Mensagens</h1>
+		<p th:if="${#lists.isEmpty(linkedVeterinarians)}">Conecte um veterinário ao pet antes de enviar mensagens.</p>
+
+		<form th:action="@{/messages/form}" method="post" th:if="${!#lists.isEmpty(linkedVeterinarians)}">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			<p>
+				<label for="conversationKey">Pet e veterinário</label><br>
+				<select id="conversationKey" name="conversationKey" required>
+					<option value="">Selecione</option>
+					<option th:each="link : ${linkedVeterinarians}"
+							th:value="${link.pet.id} + ':' + ${link.veterinarian.id}"
+							th:text="${link.pet.name} + ' com ' + ${link.veterinarian.name}"></option>
+				</select>
+			</p>
+			<p><input type="text" name="subject" placeholder="Assunto" maxlength="120" required></p>
+			<p><textarea name="message" placeholder="Mensagem" maxlength="1000" required></textarea></p>
+			<button type="submit">Enviar mensagem</button>
+		</form>
+
+		<h2>Histórico</h2>
+		<p th:if="${#lists.isEmpty(messages)}">Nenhuma mensagem.</p>
+		<table border="1" cellpadding="6" th:if="${!#lists.isEmpty(messages)}">
+			<thead>
+				<tr>
+					<th>Pet</th>
+					<th>De/Para</th>
+					<th>Assunto</th>
+					<th>Mensagem</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${messages}">
+					<td th:text="${item.petName()}"></td>
+					<td th:text="${item.senderName()} + ' para ' + ${item.receiverName()}"></td>
+					<td th:text="${item.subject()}"></td>
+					<td th:text="${item.message()}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+</html>
