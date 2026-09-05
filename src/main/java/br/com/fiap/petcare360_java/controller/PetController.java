@@ -55,6 +55,14 @@ public class PetController {
 	}
 
 	@Operation(
+			summary = "Listar pacientes do veterinário",
+			description = "Retorna os pets vinculados ao veterinário autenticado. Administradores recebem os pets ativos do sistema.")
+	@GetMapping("/patients")
+	public List<PetResponse> myPatients() {
+		return petService.listByVeterinarian();
+	}
+
+	@Operation(
 			summary = "Cadastrar pet",
 			description = "Cria o pet, a coleira inteligente e a primeira leitura de sensores em uma única requisição.")
 	@PostMapping

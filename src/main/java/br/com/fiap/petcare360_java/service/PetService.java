@@ -49,17 +49,20 @@ public class PetService {
 	private final AlertRepository alertRepository;
 	private final PetVeterinarianRepository petVeterinarianRepository;
 	private final CurrentUserService currentUserService;
+	private final ClinicalAccessService clinicalAccessService;
 	private final PetMapper mapper;
 
 	public PetService(PetRepository petRepository, DeviceRepository deviceRepository,
 			SensorDataRepository sensorDataRepository, AlertRepository alertRepository,
-			PetVeterinarianRepository petVeterinarianRepository, CurrentUserService currentUserService, PetMapper mapper) {
+			PetVeterinarianRepository petVeterinarianRepository, CurrentUserService currentUserService,
+			ClinicalAccessService clinicalAccessService, PetMapper mapper) {
 		this.petRepository = petRepository;
 		this.deviceRepository = deviceRepository;
 		this.sensorDataRepository = sensorDataRepository;
 		this.alertRepository = alertRepository;
 		this.petVeterinarianRepository = petVeterinarianRepository;
 		this.currentUserService = currentUserService;
+		this.clinicalAccessService = clinicalAccessService;
 		this.mapper = mapper;
 	}
 
@@ -88,7 +91,27 @@ public class PetService {
 	@Cacheable(value = "pet", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #id")
 	@Transactional(readOnly = true)
 	public PetResponse find(Long id) {
-		return toResponseWithCurrentStatus(findOwnedPet(id));
+		return toResponseWithCurrentStatus(findAccessiblePet(id));
+	}
+
+	@Cacheable(value = "pets", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':patients'")
+	@Transactional(readOnly = true)
+	public List<PetResponse> listByVeterinarian() {
+		if (!currentUserService.hasRole("ROLE_VETERINARIO") && !currentUserService.hasRole("ROLE_ADMIN")) {
+			throw new ApiException(HttpStatus.FORBIDDEN, "Apenas veterinário ou administrador pode listar pacientes");
+		}
+
+		if (currentUserService.hasRole("ROLE_ADMIN")) {
+			return petRepository.findAll().stream()
+					.filter(pet -> Boolean.TRUE.equals(pet.getActive()))
+					.map(this::toResponseWithCurrentStatus)
+					.toList();
+		}
+
+		return petVeterinarianRepository.findActiveLinksByVeterinarianEmail(currentUserService.email()).stream()
+				.map(link -> link.getPet())
+				.map(this::toResponseWithCurrentStatus)
+				.toList();
 	}
 
 	@Transactional
@@ -183,7 +206,7 @@ public class PetService {
 	@Cacheable(value = "petHealth", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #id")
 	@Transactional(readOnly = true)
 	public PetHealthStatusResponse healthStatus(Long id) {
-		Pet pet = findOwnedPet(id);
+		Pet pet = findAccessiblePet(id);
 		SensorData latest = latestData(pet);
 		MonitoringStatusEnum status = currentStatus(latest);
 
@@ -200,7 +223,18 @@ public class PetService {
 	@Cacheable(value = "petQuickAlerts", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
 	@Transactional(readOnly = true)
 	public List<QuickAlertPetResponse> quickAlerts() {
-		return petRepository.findByUserEmail(currentUserService.email()).stream()
+		List<Pet> pets;
+		if (currentUserService.hasRole("ROLE_ADMIN")) {
+			pets = petRepository.findAll();
+		} else if (currentUserService.hasRole("ROLE_VETERINARIO")) {
+			pets = petVeterinarianRepository.findActiveLinksByVeterinarianEmail(currentUserService.email()).stream()
+					.map(link -> link.getPet())
+					.toList();
+		} else {
+			pets = petRepository.findByUserEmail(currentUserService.email());
+		}
+
+		return pets.stream()
 				.map(this::toQuickAlert)
 				.filter(alert -> !MonitoringStatusEnum.NORMAL.equals(alert.currentStatus()))
 				.toList();
@@ -209,7 +243,7 @@ public class PetService {
 	@Cacheable(value = "petActivitySummary", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #id")
 	@Transactional(readOnly = true)
 	public ActivitySummaryResponse activitySummary(Long id) {
-		Pet pet = findOwnedPet(id);
+		Pet pet = findAccessiblePet(id);
 		OffsetDateTime periodEnd = OffsetDateTime.now();
 		OffsetDateTime periodStart = periodEnd.minusHours(24);
 		List<SensorData> readings = sensorDataRepository.findByDevicePetIdAndTimestampAfter(pet.getId(), periodStart);
@@ -229,6 +263,11 @@ public class PetService {
 	public Pet findOwnedPet(Long id) {
 		return petRepository.findByIdAndUserEmail(id, currentUserService.email())
 				.orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Pet não encontrado"));
+	}
+
+	@Transactional(readOnly = true)
+	public Pet findAccessiblePet(Long id) {
+		return clinicalAccessService.accessiblePet(id);
 	}
 
 	@Transactional(readOnly = true)

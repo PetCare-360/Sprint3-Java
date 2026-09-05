@@ -69,7 +69,7 @@ O requisito pede fluxos completos alem de CRUD. No projeto foram implementados:
 | Perfil | Permissoes principais |
 |---|---|
 | `ROLE_CLIENTE` | Acessa area do tutor, cadastra seus pets, vincula veterinario, envia mensagens, solicita consultas e visualiza recomendacoes. |
-| `ROLE_VETERINARIO` | Acessa area do veterinario, consulta pets vinculados, responde mensagens, acompanha consultas, cria recomendacoes e gerencia leituras IoT. |
+| `ROLE_VETERINARIO` | Acessa area do veterinario, consulta pacientes vinculados, responde mensagens, acompanha consultas, cria recomendacoes e gerencia leituras IoT. |
 | `ROLE_ADMIN` | Acessa area administrativa, visualiza usuarios, pets, vinculos, mensagens, consultas, recomendacoes e tem visao geral do sistema. |
 
 ## Acessos De Teste
@@ -207,6 +207,7 @@ Ao receber uma leitura, o backend:
 |---|---|---|
 | GET | `/pets?page=0&size=10` | Lista pets com paginacao |
 | GET | `/pets/all` | Lista pets sem paginacao |
+| GET | `/pets/patients` | Lista pacientes vinculados ao veterinario autenticado |
 | POST | `/pets` | Cadastra pet, coleira e primeira leitura |
 | GET | `/pets/{id}` | Consulta pet por ID |
 | PUT | `/pets/{id}` | Atualiza pet e registra nova leitura |

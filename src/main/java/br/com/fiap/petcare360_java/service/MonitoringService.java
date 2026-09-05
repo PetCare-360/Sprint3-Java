@@ -35,7 +35,7 @@ public class MonitoringService {
 	@Cacheable(value = "petSummary", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #petId")
 	@Transactional(readOnly = true)
 	public PetSummaryResponse summary(Long petId) {
-		Pet pet = petService.findOwnedPet(petId);
+		Pet pet = petService.findAccessiblePet(petId);
 		SensorData latest = sensorDataRepository.findFirstByDevicePetIdOrderByTimestampDesc(pet.getId()).orElse(null);
 		MonitoringStatusEnum currentStatus = latest == null ? MonitoringStatusEnum.NORMAL : latest.getStatus();
 
@@ -50,7 +50,7 @@ public class MonitoringService {
 	@Cacheable(value = "petMonitoring", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #petId + ':' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
 	@Transactional(readOnly = true)
 	public Page<SensorDataResponse> monitoring(Long petId, MonitoringStatusEnum status, Pageable pageable) {
-		petService.findOwnedPet(petId);
+		petService.findAccessiblePet(petId);
 		if (status == null) {
 			return sensorDataRepository.findByDevicePetId(petId, pageable)
 					.map(mapper::toSensorDataResponse);
@@ -62,7 +62,7 @@ public class MonitoringService {
 	@Cacheable(value = "petActivity", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #petId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
 	@Transactional(readOnly = true)
 	public Page<SensorDataResponse> activity(Long petId, Pageable pageable) {
-		petService.findOwnedPet(petId);
+		petService.findAccessiblePet(petId);
 		return sensorDataRepository.findByDevicePetId(petId, pageable)
 				.map(mapper::toSensorDataResponse);
 	}
@@ -70,7 +70,7 @@ public class MonitoringService {
 	@Cacheable(value = "petLocation", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #petId")
 	@Transactional(readOnly = true)
 	public SensorDataResponse location(Long petId) {
-		petService.findOwnedPet(petId);
+		petService.findAccessiblePet(petId);
 		return sensorDataRepository.findFirstByDevicePetIdOrderByTimestampDesc(petId)
 				.map(mapper::toSensorDataResponse)
 				.orElse(null);
@@ -79,7 +79,7 @@ public class MonitoringService {
 	@Cacheable(value = "petAlerts", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':' + #petId + ':' + #level + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
 	@Transactional(readOnly = true)
 	public Page<AlertResponse> alerts(Long petId, AlertLevelEnum level, Pageable pageable) {
-		petService.findOwnedPet(petId);
+		petService.findAccessiblePet(petId);
 		if (level == null) {
 			return alertRepository.findByPetId(petId, pageable)
 					.map(mapper::toAlertResponse);
